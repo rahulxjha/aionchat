@@ -1,0 +1,50 @@
+<main class="page">
+  <section class="card">
+    <div class="logo">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
+      </svg>
+    </div>
+
+    <h1>Join the chat</h1>
+    <p class="subtitle">
+      Pick a username to get started. If it already exists, you'll continue as that user.
+    </p>
+
+    <form (ngSubmit)="submit()" novalidate>
+      <label class="label" for="username">Username</label>
+      <input id="username" name="username" class="input" placeholder="e.g. rahul"
+             autocomplete="off" maxlength="20" autofocus [(ngModel)]="username" />
+
+      <label class="label" for="displayName">
+        Display name <span class="label-hint">(optional)</span>
+      </label>
+      <input id="displayName" name="displayName" class="input" placeholder="Rahul Jha"
+             autocomplete="off" maxlength="50" [(ngModel)]="displayName" />
+
+      @if (error(); as error) {
+        <p class="error" role="alert">{{ error }}</p>
+      }
+
+      <button type="submit" class="btn btn-primary submit" [disabled]="submitting()">
+        {{ submitting() ? 'Joining…' : 'Continue' }}
+      </button>
+    </form>
+
+    @if (recentUsers().length > 0) {
+      <div class="recent">
+        <p class="recent-title">Recently used on this device</p>
+        <div class="chips">
+          @for (recent of recentUsers(); track recent.username) {
+            <button type="button" class="chip" [disabled]="submitting()" (click)="joinAs(recent)">
+              <app-avatar size="xs" [name]="recent.displayName || recent.username"
+                          [colorKey]="recent.username" />
+              {{ recent.username }}
+            </button>
+          }
+        </div>
+      </div>
+    }
+  </section>
+</main>

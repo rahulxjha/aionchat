@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="003-create-messages" author="rahul">
+        <createTable tableName="messages">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="pk_messages"/>
+            </column>
+            <!-- Deleting a room deletes its messages -->
+            <column name="room_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_messages_room"
+                             references="chat_rooms(id)" deleteCascade="true"/>
+            </column>
+            <!-- Nullable: system messages have no sender -->
+            <column name="sender_id" type="BIGINT">
+                <constraints foreignKeyName="fk_messages_sender" references="users(id)"/>
+            </column>
+            <column name="content" type="VARCHAR(1000)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sent_at" type="TIMESTAMP WITH TIME ZONE" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- History query: latest N messages of a room before a given message id -->
+        <createIndex tableName="messages" indexName="idx_messages_room_id_id">
+            <column name="room_id"/>
+            <column name="id"/>
+        </createIndex>
+    </changeSet>
+
+    <!-- Raw SQL has no automatic rollback, so it gets its own changeset with an explicit one -->
+    <changeSet id="003-messages-type-check" author="rahul">
+        <sql>
+            ALTER TABLE messages ADD CONSTRAINT chk_messages_type
+                CHECK (type IN ('CHAT', 'JOIN', 'SYSTEM'))
+        </sql>
+        <rollback>
+            <sql>ALTER TABLE messages DROP CONSTRAINT chk_messages_type</sql>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

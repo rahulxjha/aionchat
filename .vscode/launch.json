@@ -1,0 +1,27 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "AionChat Backend",
+            "request": "launch",
+            "mainClass": "com.aionchat.messagingapp.MessagingAppApplication",
+            "projectName": "messaging-app",
+            "envFile": "${workspaceFolder}/backend/.env"
+        },
+        {
+            "type": "chrome",
+            "name": "AionChat Frontend",
+            "request": "launch",
+            "preLaunchTask": "frontend: start",
+            "url": "http://localhost:4200/"
+        }
+    ],
+    "compounds": [
+        {
+            "name": "AionChat Full Stack",
+            "configurations": ["AionChat Backend", "AionChat Frontend"],
+            "stopAll": true
+        }
+    ]
+}

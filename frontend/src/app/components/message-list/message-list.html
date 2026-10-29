@@ -1,0 +1,64 @@
+<div class="scroller" #scroller>
+  <div class="inner">
+    @if (hasMore()) {
+      <button type="button" class="load-older" [disabled]="loadingOlder()" (click)="loadOlder()">
+        {{ loadingOlder() ? 'Loading…' : 'Load older messages' }}
+      </button>
+    }
+
+    @for (row of rows(); track row.message.id) {
+      @if (row.dayLabel) {
+        <div class="day-divider"><span>{{ row.dayLabel }}</span></div>
+      }
+
+      @if (row.message.type !== 'CHAT') {
+        <div class="system"><span>{{ row.message.content }}</span></div>
+      } @else if (row.mine) {
+        <div class="message mine">
+          <div class="bubble">{{ row.message.content }}</div>
+          <div class="meta">
+            {{ formatTime(row.message.sentAt) }}
+            @if (store.isReadByOthers(row.message)) {
+              <svg class="tick read" width="16" height="12" viewBox="0 0 18 12" fill="none"
+                   stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                   stroke-linejoin="round" aria-label="Read">
+                <path d="M1 6.5 4 9.5 11 2.5" />
+                <path d="M7.5 9.5 14.5 2.5" />
+              </svg>
+            } @else {
+              <svg class="tick" width="12" height="12" viewBox="0 0 12 12" fill="none"
+                   stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                   stroke-linejoin="round" aria-label="Sent">
+                <path d="M1.5 6.5 4.5 9.5 10.5 2.5" />
+              </svg>
+            }
+          </div>
+        </div>
+      } @else {
+        <div class="message theirs" [class.run-start]="row.showName">
+          <div class="avatar-slot">
+            @if (row.showAvatar) {
+              <app-avatar size="sm" [name]="senderName(row.message)"
+                          [colorKey]="row.message.senderUsername ?? ''" />
+            }
+          </div>
+          <div class="content">
+            @if (row.showName) {
+              <div class="sender" [style.color]="senderColor(row.message)">
+                {{ senderName(row.message) }}
+              </div>
+            }
+            <div class="bubble">{{ row.message.content }}</div>
+            <div class="meta">{{ formatTime(row.message.sentAt) }}</div>
+          </div>
+        </div>
+      }
+    } @empty {
+      <div class="placeholder">{{ loaded() ? 'No messages yet - say hi 👋' : 'Loading messages…' }}</div>
+    }
+
+    @if (typingText(); as typing) {
+      <div class="typing">{{ typing }}</div>
+    }
+  </div>
+</div>

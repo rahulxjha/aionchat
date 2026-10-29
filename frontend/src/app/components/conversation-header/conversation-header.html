@@ -1,0 +1,10 @@
+<app-avatar [name]="title()" [colorKey]="store.roomColorKey(room())"
+            [shape]="room().type === 'GROUP' ? 'square' : 'circle'"
+            [online]="!!otherUser()?.online" />
+<div class="info">
+  <div class="title">{{ title() }}</div>
+  <div class="subtitle">{{ subtitle() }}</div>
+</div>
+<span class="connection" [attr.data-status]="store.connection()">
+  <span class="dot"></span>{{ connectionLabel() }}
+</span>

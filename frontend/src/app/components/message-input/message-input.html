@@ -1,0 +1,12 @@
+<form (submit)="send($event)">
+  <input class="input" autocomplete="off" [attr.maxlength]="maxLength"
+         [placeholder]="placeholder()" [attr.aria-label]="placeholder()"
+         [value]="text()" (input)="onInput($event)" />
+  <button type="submit" class="send" aria-label="Send" [disabled]="!canSend()">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M5 12h14" />
+      <path d="m13 6 6 6-6 6" />
+    </svg>
+  </button>
+</form>

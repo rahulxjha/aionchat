@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="005-users-display-name" author="rahul">
+        <addColumn tableName="users">
+            <column name="display_name" type="VARCHAR(50)"/>
+        </addColumn>
+    </changeSet>
+
+    <!-- Rooms become DIRECT (two people, no name) or GROUP (named, any members) -->
+    <changeSet id="005-chat-rooms-direct-and-group" author="rahul">
+        <dropColumn tableName="chat_rooms" columnName="description"/>
+        <addColumn tableName="chat_rooms">
+            <!-- The default only fills existing rows; the app always sets the type -->
+            <column name="type" type="VARCHAR(10)" defaultValue="GROUP">
+                <constraints nullable="false"/>
+            </column>
+            <!-- "dm:alice:bob" - unique, so two people always share a single direct room -->
+            <column name="direct_key" type="VARCHAR(50)">
+                <constraints unique="true" uniqueConstraintName="uk_chat_rooms_direct_key"/>
+            </column>
+        </addColumn>
+        <dropDefaultValue tableName="chat_rooms" columnName="type"/>
+        <!-- Group names may repeat, and direct rooms have no name -->
+        <dropUniqueConstraint tableName="chat_rooms" constraintName="uk_chat_rooms_name"/>
+        <dropNotNullConstraint tableName="chat_rooms" columnName="name" columnDataType="VARCHAR(50)"/>
+        <sql>
+            ALTER TABLE chat_rooms ADD CONSTRAINT chk_chat_rooms_type CHECK (type IN ('DIRECT', 'GROUP'))
+        </sql>
+        <rollback>
+            <sql>ALTER TABLE chat_rooms DROP CONSTRAINT chk_chat_rooms_type</sql>
+            <addNotNullConstraint tableName="chat_rooms" columnName="name" columnDataType="VARCHAR(50)"/>
+            <addUniqueConstraint tableName="chat_rooms" columnNames="name" constraintName="uk_chat_rooms_name"/>
+            <dropColumn tableName="chat_rooms" columnName="direct_key"/>
+            <dropColumn tableName="chat_rooms" columnName="type"/>
+            <addColumn tableName="chat_rooms">
+                <column name="description" type="VARCHAR(255)"/>
+            </addColumn>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="005-create-room-members" author="rahul">
+        <createTable tableName="room_members">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="pk_room_members"/>
+            </column>
+            <column name="room_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_room_members_room"
+                             references="chat_rooms(id)" deleteCascade="true"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_room_members_user" references="users(id)"/>
+            </column>
+            <!-- Read marker: drives both unread counts and read ticks -->
+            <column name="last_read_message_id" type="BIGINT"/>
+        </createTable>
+
+        <!-- Also serves "members of room X" lookups, since room_id is its first column -->
+        <addUniqueConstraint tableName="room_members" columnNames="room_id, user_id"
+                             constraintName="uk_room_members_room_user"/>
+
+        <!-- "Rooms of user X" - the chat list -->
+        <createIndex tableName="room_members" indexName="idx_room_members_user_id">
+            <column name="user_id"/>
+        </createIndex>
+    </changeSet>
+
+    <!-- "general" stays as the lobby every new user joins; "random" has no purpose any more -->
+    <changeSet id="005-remove-random-room" author="rahul">
+        <delete tableName="chat_rooms">
+            <where>name = 'random'</where>
+        </delete>
+        <rollback>
+            <insert tableName="chat_rooms">
+                <column name="name" value="random"/>
+                <column name="type" value="GROUP"/>
+            </insert>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

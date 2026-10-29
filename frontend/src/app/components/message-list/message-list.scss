@@ -1,0 +1,152 @@
+:host {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.scroller {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: 24px;
+}
+
+.load-older {
+  align-self: center;
+  height: 32px;
+  margin-bottom: 16px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 13px;
+
+  &:hover:not(:disabled) {
+    color: var(--text);
+  }
+}
+
+.day-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0 16px;
+  color: var(--text-muted);
+  font-size: 12px;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+}
+
+.system {
+  align-self: center;
+  margin: 4px 0 16px;
+
+  span {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: var(--surface-muted);
+    color: var(--text-muted);
+    font-size: 12px;
+  }
+}
+
+.message {
+  display: flex;
+  margin-bottom: 8px;
+}
+
+.bubble {
+  max-width: min(560px, 70vw);
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 15px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.mine {
+  flex-direction: column;
+  align-items: flex-end;
+
+  .bubble {
+    background: var(--primary);
+    color: #fff;
+  }
+}
+
+.tick {
+  color: var(--text-muted);
+
+  &.read {
+    color: var(--primary);
+  }
+}
+
+.theirs {
+  align-items: flex-end;
+  gap: 10px;
+
+  &.run-start {
+    margin-top: 8px;
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 0;
+  }
+
+  .bubble {
+    border: 1px solid var(--border);
+    background: var(--surface);
+  }
+}
+
+/* Keeps bubbles in a run aligned even when only the last one shows the avatar. */
+.avatar-slot {
+  width: 30px;
+  flex-shrink: 0;
+  margin-bottom: 20px;
+}
+
+.sender {
+  margin: 0 0 4px 2px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.placeholder {
+  margin: auto;
+  color: var(--text-muted);
+}
+
+.typing {
+  margin-top: 4px;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-style: italic;
+}

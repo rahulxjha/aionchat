@@ -1,0 +1,29 @@
+<div class="workspace">
+  <app-sidebar (newChat)="showNewChat.set(true)" />
+
+  <main class="conversation">
+    @if (store.activeRoom(); as room) {
+      <app-conversation-header [room]="room" />
+      <app-message-list [room]="room" />
+      <app-message-input [room]="room" />
+    } @else {
+      <div class="empty">
+        <h2>No chat selected</h2>
+        <p>Pick a chat on the left, click a person, or start a new chat with +.</p>
+      </div>
+    }
+  </main>
+</div>
+
+@if (showNewChat()) {
+  <app-new-chat-dialog (closed)="showNewChat.set(false)" />
+}
+
+@if (store.error(); as error) {
+  <div class="toast" role="alert">
+    <span>{{ error }}</span>
+    <button type="button" class="toast-close" aria-label="Dismiss" (click)="store.error.set(null)">
+      ×
+    </button>
+  </div>
+}

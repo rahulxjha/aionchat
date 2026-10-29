@@ -1,0 +1,64 @@
+:host {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 68px;
+  flex-shrink: 0;
+  padding: 0 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  overflow: hidden;
+  font-size: 15px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.subtitle {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+/* Connection pill - color follows the WebSocket status. */
+.connection {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  &[data-status='connected'] {
+    background: var(--online-soft);
+    color: var(--online);
+  }
+
+  &[data-status='connecting'],
+  &[data-status='reconnecting'] {
+    background: var(--warning-soft);
+    color: var(--warning);
+  }
+
+  &[data-status='disconnected'] {
+    background: var(--danger-soft);
+    color: var(--danger);
+  }
+}
